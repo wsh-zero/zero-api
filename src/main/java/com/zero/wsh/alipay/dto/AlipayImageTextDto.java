@@ -1,6 +1,6 @@
 package com.zero.wsh.alipay.dto;
 
-import com.google.gson.annotations.SerializedName;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Data;
 
@@ -9,7 +9,7 @@ import java.util.List;
 @Data
 @Builder
 public class AlipayImageTextDto {
-    @SerializedName("msg_type")
+    @JsonProperty("msg_type")
     private String msgType;
     private List<AlipayImageTextDetails> articles;
 
@@ -18,10 +18,10 @@ public class AlipayImageTextDto {
     public static class AlipayImageTextDetails {
         private String title;
         private String desc;
-        @SerializedName("image_url")
+        @JsonProperty("image_url")
         private String imageUrl;
         private String url;
-        @SerializedName("action_name")
+        @JsonProperty("action_name")
         private String actionName;
     }
 }

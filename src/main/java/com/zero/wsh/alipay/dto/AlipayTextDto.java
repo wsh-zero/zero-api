@@ -1,18 +1,19 @@
 package com.zero.wsh.alipay.dto;
 
-import com.google.gson.annotations.SerializedName;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Data;
 
-@Data
 @Builder
+@Data
 public class AlipayTextDto {
-    @SerializedName("msg_type")
+    @JsonProperty("msg_type")
     private String msgType;
     private AlipayTextDetails text;
+
     @Data
     @Builder
-    public static class  AlipayTextDetails {
+    public static class AlipayTextDetails {
         private String title;
         private String content;
     }
