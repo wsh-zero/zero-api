@@ -3,6 +3,7 @@ package com.zero.wsh.alipay.controller;
 import com.alipay.api.AlipayClient;
 import com.zero.wsh.alipay.AlipayFactory;
 import com.zero.wsh.alipay.dto.AlipayCreateMessageDto;
+import com.zero.wsh.alipay.dto.AlipayTextDto;
 import com.zero.wsh.enums.AlipayEnums;
 import com.zero.wsh.utils.AlipayUtils;
 import com.zero.wsh.utils.FileUtils;
@@ -15,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/alipay/")
@@ -79,9 +82,21 @@ public class AlipayController {
     @ApiOperation("发送图文消息")
     @PostMapping("send/total")
     @ApiImplicitParam(name = "appId", value = "appId")
-    public Object sendTotal(@RequestParam(defaultValue = "2019100968229570") String appId) {
+    public Object sendTotal(@RequestParam(defaultValue = "2019100968229570") String appId, AlipayEnums alipayEnums) {
         AlipayClient alipayClient = AlipayFactory.getAlipayClient(appId, PRIVATE_KEY, ALIPAY_PUBLIC_KEY);
-        String bizContent = "";
-        return AlipayUtils.sendTotal(alipayClient, bizContent);
+        Object bizContent = handleZero(alipayEnums);
+//        return AlipayUtils.sendTotal(alipayClient, bizContent);
+        return bizContent;
+    }
+
+    public Object handleZero(AlipayEnums alipayEnums) {
+        if (Objects.equals(alipayEnums, AlipayEnums.TEXT)) {
+            AlipayTextDto build = AlipayTextDto.builder()
+                    .msgType(AlipayEnums.TEXT.getKey())
+                    .text(AlipayTextDto.AlipayTextDetails.builder().title("标题").content("内容").build()).build();
+            return build;
+        } else {
+            return AlipayEnums.IMAGE_TEXT.getKey();
+        }
     }
 }

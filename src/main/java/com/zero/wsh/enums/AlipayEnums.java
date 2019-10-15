@@ -10,7 +10,9 @@ public enum AlipayEnums {
     ALIPAY_OPEN_PUBLIC_MESSAGE_CONTENT_CREATE_RESPONSE("alipay_open_public_message_content_create_response"),
     ALIPAY_OPEN_PUBLIC_MESSAGE_CONTENT_MODIFY_RESPONSE("alipay_open_public_message_content_modify_response"),
     T("T"),
-    F("F");
+    F("F"),
+    TEXT("text"),
+    IMAGE_TEXT("image-text");
     private String key;
 
     AlipayEnums(String key) {
