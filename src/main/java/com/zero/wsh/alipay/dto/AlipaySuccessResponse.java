@@ -5,10 +5,10 @@ import lombok.Data;
 
 @Data
 public class AlipaySuccessResponse {
+    private String code;
+    private String msg;
     @Data
     public class AlipayUploadImage {
-        private String code;
-        private String msg;
         @SerializedName("image_id")
         private String imageId;
         @SerializedName("image_url")
@@ -17,8 +17,6 @@ public class AlipaySuccessResponse {
 
     @Data
     public class AlipayCreateOrUpdateMessage {
-        private String code;
-        private String msg;
         @SerializedName("content_id")
         private String contentId;
         @SerializedName("content_url")
@@ -27,8 +25,6 @@ public class AlipaySuccessResponse {
 
     @Data
     public class AlipaySendTotal {
-        private String code;
-        private String msg;
         @SerializedName("message_id")
         private String messageId;
     }
