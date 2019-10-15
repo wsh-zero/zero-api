@@ -3,6 +3,7 @@ package com.zero.wsh.alipay.controller;
 import com.alipay.api.AlipayClient;
 import com.zero.wsh.alipay.AlipayFactory;
 import com.zero.wsh.alipay.dto.AlipayCreateMessageDto;
+import com.zero.wsh.alipay.dto.AlipayImageTextDto;
 import com.zero.wsh.alipay.dto.AlipayTextDto;
 import com.zero.wsh.enums.AlipayEnums;
 import com.zero.wsh.utils.AlipayUtils;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.Objects;
 
 @RestController
@@ -91,12 +93,22 @@ public class AlipayController {
 
     public Object handleZero(AlipayEnums alipayEnums) {
         if (Objects.equals(alipayEnums, AlipayEnums.TEXT)) {
-            AlipayTextDto build = AlipayTextDto.builder()
+            return AlipayTextDto.builder()
                     .msgType(AlipayEnums.TEXT.getKey())
                     .text(AlipayTextDto.AlipayTextDetails.builder().title("标题").content("内容").build()).build();
-            return build;
         } else {
-            return AlipayEnums.IMAGE_TEXT.getKey();
+            ArrayList<AlipayImageTextDto.AlipayImageTextDetails> articles = new ArrayList<>();
+            AlipayImageTextDto.AlipayImageTextDetails build = AlipayImageTextDto.AlipayImageTextDetails.builder()
+                    .title("标题")
+                    .desc("内容")
+                    .actionName("链接文字")
+                    .url("点击图文消息跳转的链接")
+                    .imageUrl("图片链接").build();
+            articles.add(build);
+            articles.add(build);
+            return AlipayImageTextDto.builder()
+                    .msgType(AlipayEnums.IMAGE_TEXT.getKey())
+                    .articles(articles).build();
         }
     }
 }
