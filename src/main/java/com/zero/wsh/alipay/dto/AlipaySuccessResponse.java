@@ -14,4 +14,14 @@ public class AlipaySuccessResponse {
         @SerializedName("image_url")
         private String imageUrl;
     }
+
+    @Data
+    public class AlipayCreateOrUpdateMessage {
+        private String code;
+        private String msg;
+        @SerializedName("content_id")
+        private String contentId;
+        @SerializedName("content_url")
+        private String contentUrl;
+    }
 }

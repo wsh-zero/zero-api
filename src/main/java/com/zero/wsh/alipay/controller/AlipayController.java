@@ -2,8 +2,11 @@ package com.zero.wsh.alipay.controller;
 
 import com.alipay.api.AlipayClient;
 import com.zero.wsh.alipay.AlipayFactory;
+import com.zero.wsh.alipay.dto.AlipayCreateMessageDto;
+import com.zero.wsh.enums.AlipayEnums;
 import com.zero.wsh.utils.AlipayUtils;
 import com.zero.wsh.utils.FileUtils;
+import com.zero.wsh.utils.GsonUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
@@ -47,8 +50,30 @@ public class AlipayController {
     @ApiImplicitParam(name = "appId", value = "appId")
     public Object createMessage(@RequestParam(defaultValue = "2019100968229570") String appId) {
         AlipayClient alipayClient = AlipayFactory.getAlipayClient(appId, PRIVATE_KEY, ALIPAY_PUBLIC_KEY);
-        String bizContent = "";
+        AlipayCreateMessageDto build = AlipayCreateMessageDto.builder()
+                .title("标题")
+                .content("内容")
+                .cover("https://oalipay-dl-django.alicdn.com/rest/1.0/image?fileIds=7840I6k5Tn-hksT4TwmDDQAAACMAAQED&zoom=original")
+                .couldComment(AlipayEnums.T)
+                .build();
+        String bizContent = GsonUtil.toJson(build);
         return AlipayUtils.createMessage(alipayClient, bizContent);
+    }
+
+    @ApiOperation("修改图文消息接口")
+    @PostMapping("update/message")
+    @ApiImplicitParam(name = "appId", value = "appId")
+    public Object updateMessage(@RequestParam(defaultValue = "2019100968229570") String appId) {
+        AlipayClient alipayClient = AlipayFactory.getAlipayClient(appId, PRIVATE_KEY, ALIPAY_PUBLIC_KEY);
+        AlipayCreateMessageDto build = AlipayCreateMessageDto.builder()
+                .title("标题")
+                .content("内容")
+                .cover("https://oalipay-dl-django.alicdn.com/rest/1.0/image?fileIds=7840I6k5Tn-hksT4TwmDDQAAACMAAQED&zoom=original")
+                .couldComment(AlipayEnums.T)
+                .contentId("1")
+                .build();
+        String bizContent = GsonUtil.toJson(build);
+        return AlipayUtils.updateMessage(alipayClient, bizContent);
     }
 
     @ApiOperation("发送图文消息")

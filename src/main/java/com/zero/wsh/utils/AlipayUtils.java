@@ -5,10 +5,13 @@ import com.alipay.api.AlipayClient;
 import com.alipay.api.FileItem;
 import com.alipay.api.request.AlipayOfflineMaterialImageUploadRequest;
 import com.alipay.api.request.AlipayOpenPublicMessageContentCreateRequest;
+import com.alipay.api.request.AlipayOpenPublicMessageContentModifyRequest;
 import com.alipay.api.request.AlipayOpenPublicMessageTotalSendRequest;
 import com.alipay.api.response.AlipayOfflineMaterialImageUploadResponse;
 import com.alipay.api.response.AlipayOpenPublicMessageContentCreateResponse;
+import com.alipay.api.response.AlipayOpenPublicMessageContentModifyResponse;
 import com.alipay.api.response.AlipayOpenPublicMessageTotalSendResponse;
+import com.zero.wsh.alipay.dto.AlipayFailResponse;
 import com.zero.wsh.alipay.dto.AlipaySuccessResponse;
 import com.zero.wsh.enums.AlipayEnums;
 
@@ -17,45 +20,67 @@ import java.util.Map;
 import java.util.UUID;
 
 public class AlipayUtils {
-    public static String uploadImage(AlipayClient alipayClient, File file) {
+    public static Object uploadImage(AlipayClient alipayClient, File file) {
         AlipayOfflineMaterialImageUploadRequest request = new AlipayOfflineMaterialImageUploadRequest();
         request.setImageType(AlipayEnums.JPG.getKey());
         request.setImageName(UUID.randomUUID().toString());
         request.setImageContent(new FileItem(file));
-        String failMsg;
+        Object failMsg;
         try {
             AlipayOfflineMaterialImageUploadResponse response = alipayClient.execute(request);
-            file.delete();
-            if (response.isSuccess()) {
-                Map<String, Object> map = GsonUtil.gsonToMaps(response.getBody());
-                AlipaySuccessResponse.AlipayUploadImage alipaySuccessResponse = GsonUtil.gsonToBean(GsonUtil.toJson(map.get(AlipayEnums.ALIPAY_OFFLINE_MATERIAL_IMAGE_UPLOAD_RESPONSE.getKey())), AlipaySuccessResponse.AlipayUploadImage.class);
-                return response.getBody();
+            if (file.exists()) {
+                file.delete();
             }
-            failMsg = response.getBody();
+            String body = response.getBody();
+            Map<String, Object> map = GsonUtil.gsonToMaps(body);
+            String json = GsonUtil.toJson(map.get(AlipayEnums.ALIPAY_OFFLINE_MATERIAL_IMAGE_UPLOAD_RESPONSE.getKey()));
+            if (response.isSuccess()) {
+                return GsonUtil.gsonToBean(json, AlipaySuccessResponse.AlipayUploadImage.class);
+            }
+            failMsg = GsonUtil.gsonToBean(json, AlipayFailResponse.class);
         } catch (Exception e) {
             e.printStackTrace();
-            failMsg = String.format("上传失败:%s", e.getMessage());
+            failMsg = "上传图片失败,请检查密匙";
         }
         return failMsg;
     }
 
-    public static String createMessage(AlipayClient alipayClient, String bizContent) {
+    public static Object createMessage(AlipayClient alipayClient, String bizContent) {
         AlipayOpenPublicMessageContentCreateRequest request = new AlipayOpenPublicMessageContentCreateRequest();
-        request.setBizContent("{" +
-                "\"title\":\"里面的标题1\"," +
-                "\"cover\":\"https:\\/\\/oalipay-dl-django.alicdn.com\\/rest\\/1.0\\/image?fileIds=3XwqJu4hStm5Tk22D1OPlgAAACMAAQED&zoom=original\"," +
-                "\"content\":\"<html>这里是富文本1<h1>正确1</h1></html>\"," +
-                "\"could_comment\":\"T\"" +
-                "  }");
-        String failMsg;
+        request.setBizContent(bizContent);
+        Object failMsg;
         try {
             AlipayOpenPublicMessageContentCreateResponse response = alipayClient.execute(request);
+            String body = response.getBody();
+            Map<String, Object> map = GsonUtil.gsonToMaps(body);
+            String json = GsonUtil.toJson(map.get(AlipayEnums.ALIPAY_OPEN_PUBLIC_MESSAGE_CONTENT_CREATE_RESPONSE.getKey()));
             if (response.isSuccess()) {
-                return response.getBody();
+                return GsonUtil.gsonToBean(json, AlipaySuccessResponse.AlipayCreateOrUpdateMessage.class);
             }
-            failMsg = String.format("创建图文消息内容失败 code=%s msg= %s", response.getCode(), response.getMsg());
+            failMsg = GsonUtil.gsonToBean(json, AlipayFailResponse.class);
         } catch (Exception e) {
-            failMsg = String.format("创建图文消息内容失败:%s", e.getMessage());
+            e.printStackTrace();
+            failMsg = "创建图文消息内容失败,请检查密匙";
+        }
+        return failMsg;
+    }
+
+    public static Object updateMessage(AlipayClient alipayClient, String bizContent) {
+        AlipayOpenPublicMessageContentModifyRequest request = new AlipayOpenPublicMessageContentModifyRequest();
+        request.setBizContent(bizContent);
+        Object failMsg;
+        try {
+            AlipayOpenPublicMessageContentModifyResponse response = alipayClient.execute(request);
+            String body = response.getBody();
+            Map<String, Object> map = GsonUtil.gsonToMaps(body);
+            String json = GsonUtil.toJson(map.get(AlipayEnums.ALIPAY_OPEN_PUBLIC_MESSAGE_CONTENT_MODIFY_RESPONSE.getKey()));
+            if (response.isSuccess()) {
+                return GsonUtil.gsonToBean(json, AlipaySuccessResponse.AlipayCreateOrUpdateMessage.class);
+            }
+            failMsg = GsonUtil.gsonToBean(json, AlipayFailResponse.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+            failMsg = "修改图文消息内容失败,请检查密匙";
         }
         return failMsg;
     }
