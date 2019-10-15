@@ -1,6 +1,7 @@
 package com.zero.wsh.alipay.dto;
 
-import com.google.gson.annotations.SerializedName;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.zero.wsh.enums.AlipayEnums;
 import lombok.Builder;
 import lombok.Data;
@@ -12,8 +13,9 @@ public class AlipayCreateMessageDto {
     //封面图片
     private String cover;
     private String content;
-    @SerializedName("could_comment")
+    @JsonProperty("could_comment")
     private AlipayEnums couldComment;
-    @SerializedName("content_id")
+    @JsonProperty("content_id")
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private String contentId;
 }

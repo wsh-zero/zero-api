@@ -86,16 +86,15 @@ public class AlipayController {
     @ApiImplicitParam(name = "appId", value = "appId")
     public Object sendTotal(@RequestParam(defaultValue = "2019100968229570") String appId, AlipayEnums alipayEnums) {
         AlipayClient alipayClient = AlipayFactory.getAlipayClient(appId, PRIVATE_KEY, ALIPAY_PUBLIC_KEY);
-        Object bizContent = handleZero(alipayEnums);
-//        return AlipayUtils.sendTotal(alipayClient, bizContent);
-        return bizContent;
+        String bizContent = handleZero(alipayEnums);
+        return AlipayUtils.sendTotal(alipayClient, bizContent);
     }
 
-    public Object handleZero(AlipayEnums alipayEnums) {
+    public String handleZero(AlipayEnums alipayEnums) {
         if (Objects.equals(alipayEnums, AlipayEnums.TEXT)) {
-            return AlipayTextDto.builder()
+            return GsonUtil.toJson(AlipayTextDto.builder()
                     .msgType(AlipayEnums.TEXT.getKey())
-                    .text(AlipayTextDto.AlipayTextDetails.builder().title("标题").content("内容").build()).build();
+                    .text(AlipayTextDto.AlipayTextDetails.builder().title("标题").content("内容").build()).build());
         } else {
             ArrayList<AlipayImageTextDto.AlipayImageTextDetails> articles = new ArrayList<>();
             AlipayImageTextDto.AlipayImageTextDetails build = AlipayImageTextDto.AlipayImageTextDetails.builder()
@@ -106,9 +105,9 @@ public class AlipayController {
                     .imageUrl("图片链接").build();
             articles.add(build);
             articles.add(build);
-            return AlipayImageTextDto.builder()
+            return GsonUtil.toJson(AlipayImageTextDto.builder()
                     .msgType(AlipayEnums.IMAGE_TEXT.getKey())
-                    .articles(articles).build();
+                    .articles(articles).build());
         }
     }
 }

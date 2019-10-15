@@ -24,4 +24,12 @@ public class AlipaySuccessResponse {
         @SerializedName("content_url")
         private String contentUrl;
     }
+
+    @Data
+    public class AlipaySendTotal {
+        private String code;
+        private String msg;
+        @SerializedName("message_id")
+        private String messageId;
+    }
 }

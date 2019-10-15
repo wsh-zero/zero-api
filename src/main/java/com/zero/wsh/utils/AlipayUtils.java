@@ -90,21 +90,22 @@ public class AlipayUtils {
      *
      * @return
      */
-    public static String sendTotal(AlipayClient alipayClient, String bizContent) {
-        // 使用SDK，构建群发请求模型
+    public static Object sendTotal(AlipayClient alipayClient, String bizContent) {
         AlipayOpenPublicMessageTotalSendRequest request = new AlipayOpenPublicMessageTotalSendRequest();
-//        String msg = "{\"articles\":[{\"action_name\":\"第一个链接文字\",\"desc\":\"第一个内容\",\"image_url\":\"https:\\/\\/oalipay-dl-django.alicdn.com\\/rest\\/1.0\\/image?fileIds=jsDwluVSRDiYVQITyrVzcwAAACMAAQED&zoom=original\",\"title\":\"第一个标题\",\"url\":\"alipays:\\/\\/platformapi\\/startapp?appId=20000909&url=%2Fwww%2Fmsg.html%3FpublicId%3D2019101168301261%26msgId%3D201910116830126108844e0e-a1b3-4fd4-bb7f-1b58252fa8e7%26sourceId%3DOPENAPI_ITMC\"},{\"action_name\":\"第二个链接文字\",\"desc\":\"第二个内容\",\"title\":\"第二个标题\",\"image_url\":\"https:\\/\\/oalipay-dl-django.alicdn.com\\/rest\\/1.0\\/image?fileIds=jsDwluVSRDiYVQITyrVzcwAAACMAAQED&zoom=original\",\"url\":\"alipays:\\/\\/platformapi\\/startapp?appId=20000909&url=%2Fwww%2Fmsg.html%3FpublicId%3D2019101168301261%26msgId%3D201910116830126110a767f5-c155-482a-bd04-1685d4e5de09%26sourceId%3DOPENAPI_ITMC\"}],\"msg_type\":\"image-text\"}";
         request.setBizContent(bizContent);
-
-        String failMsg;
+        Object failMsg;
         try {
             AlipayOpenPublicMessageTotalSendResponse response = alipayClient.execute(request);
+            String body = response.getBody();
+            Map<String, Object> map = GsonUtil.gsonToMaps(body);
+            String json = GsonUtil.toJson(map.get(AlipayEnums.ALIPAY_OPEN_PUBLIC_MESSAGE_CONTENT_MODIFY_RESPONSE.getKey()));
             if (response.isSuccess()) {
-                return response.getBody();
+                return GsonUtil.gsonToBean(json, AlipaySuccessResponse.AlipaySendTotal.class);
             }
-            failMsg = String.format("消息发送失败 code=%s msg= %s", response.getCode(), response.getMsg());
+            failMsg = GsonUtil.gsonToBean(json, AlipayFailResponse.class);
         } catch (AlipayApiException e) {
-            failMsg = String.format("消息发送失败:%s", e.getMessage());
+            e.printStackTrace();
+            failMsg = "群发失败,请检查密匙";
         }
         return failMsg;
 

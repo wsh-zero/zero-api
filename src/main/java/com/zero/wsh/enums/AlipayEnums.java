@@ -9,6 +9,7 @@ public enum AlipayEnums {
     ALIPAY_OFFLINE_MATERIAL_IMAGE_UPLOAD_RESPONSE("alipay_offline_material_image_upload_response"),
     ALIPAY_OPEN_PUBLIC_MESSAGE_CONTENT_CREATE_RESPONSE("alipay_open_public_message_content_create_response"),
     ALIPAY_OPEN_PUBLIC_MESSAGE_CONTENT_MODIFY_RESPONSE("alipay_open_public_message_content_modify_response"),
+    ALIPAY_OPEN_PUBLIC_MESSAGE_TOTAL_SEND_RESPONSE("alipay_open_public_message_total_send_response"),
     T("T"),
     F("F"),
     TEXT("text"),
