@@ -110,4 +110,31 @@ public class AlipayController {
                     .articles(articles).build());
         }
     }
+
+
+    @ApiOperation("生活号基本信息")
+    @PostMapping("basic/info")
+    @ApiImplicitParam(name = "appId", value = "appId")
+    public Object basicInfo(@RequestParam(defaultValue = "2019100968229570") String appId) {
+        AlipayClient alipayClient = AlipayFactory.getAlipayClient(appId, PRIVATE_KEY, ALIPAY_PUBLIC_KEY);
+        return AlipayUtils.basicInfo(alipayClient);
+    }
+
+
+    @ApiOperation("上架")
+    @PostMapping("aboard")
+    @ApiImplicitParam(name = "appId", value = "appId")
+    public Object aboard(@RequestParam(defaultValue = "2019100968229570") String appId) {
+        AlipayClient alipayClient = AlipayFactory.getAlipayClient(appId, PRIVATE_KEY, ALIPAY_PUBLIC_KEY);
+        return AlipayUtils.aboard(alipayClient);
+    }
+
+
+    @ApiOperation("下架")
+    @PostMapping("debark")
+    @ApiImplicitParam(name = "appId", value = "appId")
+    public Object debark(@RequestParam(defaultValue = "2019100968229570") String appId) {
+        AlipayClient alipayClient = AlipayFactory.getAlipayClient(appId, PRIVATE_KEY, ALIPAY_PUBLIC_KEY);
+        return AlipayUtils.debark(alipayClient);
+    }
 }
