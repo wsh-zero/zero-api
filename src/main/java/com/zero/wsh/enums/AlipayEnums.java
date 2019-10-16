@@ -10,7 +10,7 @@ public enum AlipayEnums {
     ALIPAY_OPEN_PUBLIC_MESSAGE_CONTENT_CREATE_RESPONSE("alipay_open_public_message_content_create_response"),
     ALIPAY_OPEN_PUBLIC_MESSAGE_CONTENT_MODIFY_RESPONSE("alipay_open_public_message_content_modify_response"),
     ALIPAY_OPEN_PUBLIC_MESSAGE_TOTAL_SEND_RESPONSE("alipay_open_public_message_total_send_response"),
-    ALIPAY_OPEN_PUBLIC_INFO_QUERY_RESPONSE("alipay_open_public_life_aboard_apply_response"),
+    ALIPAY_OPEN_PUBLIC_INFO_QUERY_RESPONSE("alipay_open_public_info_query_response"),
     ALIPAY_OPEN_PUBLIC_LIFE_ABOARD_APPLY_RESPONSE("alipay_open_public_life_aboard_apply_response"),
     ALIPAY_OPEN_PUBLIC_LIFE_DEBARK_APPLY_RESPONSE("alipay_open_public_life_debark_apply_response"),
     T("T"),

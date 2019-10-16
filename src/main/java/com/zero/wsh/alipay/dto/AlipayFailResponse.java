@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 public class AlipayFailResponse {
-    private String code;
+    private Integer code;
     private String msg;
     @SerializedName("sub_code")
     private String subCode;

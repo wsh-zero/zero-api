@@ -96,7 +96,7 @@ public class AlipayUtils {
             if (response.isSuccess()) {
                 return GsonUtil.gsonToBean(json, AlipaySuccessResponse.AlipaySendTotal.class);
             }
-            failMsg = GsonUtil.gsonToBean(json, AlipayFailResponse.class);
+            failMsg = json;
         } catch (AlipayApiException e) {
             e.printStackTrace();
             failMsg = "群发失败,请检查密匙";

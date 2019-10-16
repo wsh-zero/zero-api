@@ -116,7 +116,7 @@ public class AlipayController {
     @PostMapping("basic/info")
     @ApiImplicitParam(name = "appId", value = "appId")
     public Object basicInfo(@RequestParam(defaultValue = "2019100968229570") String appId) {
-        AlipayClient alipayClient = AlipayFactory.getAlipayClient(appId, PRIVATE_KEY, ALIPAY_PUBLIC_KEY);
+        AlipayClient alipayClient = AlipayFactory.getAlipayClient(appId, "2"+PRIVATE_KEY, ALIPAY_PUBLIC_KEY);
         return AlipayUtils.basicInfo(alipayClient);
     }
 
