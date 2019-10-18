@@ -1,4 +1,4 @@
-package com.zero.wsh.alipay;
+package com.zero.wsh.components.factory;
 
 import com.alipay.api.AlipayClient;
 import com.alipay.api.DefaultAlipayClient;

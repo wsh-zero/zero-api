@@ -5,8 +5,8 @@ import com.alipay.api.AlipayClient;
 import com.alipay.api.FileItem;
 import com.alipay.api.request.*;
 import com.alipay.api.response.*;
-import com.zero.wsh.alipay.dto.AlipayFailResponse;
-import com.zero.wsh.alipay.dto.AlipaySuccessResponse;
+import com.zero.wsh.components.dto.AlipayFailResponse;
+import com.zero.wsh.components.dto.AlipaySuccessResponse;
 import com.zero.wsh.enums.AlipayEnums;
 
 import java.io.File;

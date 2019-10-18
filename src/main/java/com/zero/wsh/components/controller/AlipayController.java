@@ -1,10 +1,10 @@
-package com.zero.wsh.alipay.controller;
+package com.zero.wsh.components.controller;
 
 import com.alipay.api.AlipayClient;
-import com.zero.wsh.alipay.AlipayFactory;
-import com.zero.wsh.alipay.dto.AlipayCreateMessageDto;
-import com.zero.wsh.alipay.dto.AlipayImageTextDto;
-import com.zero.wsh.alipay.dto.AlipayTextDto;
+import com.zero.wsh.components.factory.AlipayFactory;
+import com.zero.wsh.components.dto.AlipayCreateMessageDto;
+import com.zero.wsh.components.dto.AlipayImageTextDto;
+import com.zero.wsh.components.dto.AlipayTextDto;
 import com.zero.wsh.enums.AlipayEnums;
 import com.zero.wsh.utils.AlipayUtils;
 import com.zero.wsh.utils.FileUtils;

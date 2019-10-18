@@ -1,4 +1,4 @@
-package com.zero.wsh.alipay.dto;
+package com.zero.wsh.components.dto;
 
 import com.google.gson.annotations.SerializedName;
 import lombok.Data;
