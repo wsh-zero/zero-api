@@ -58,8 +58,8 @@ public class AlipayController {
         AlipayCreateMessageDto build = AlipayCreateMessageDto.builder()
                 .title("标题")
                 .content("内容")
-                .cover("https://oalipay-dl-django.alicdn.com/rest/1.0/image?fileIds=7840I6k5Tn-hksT4TwmDDQAAACMAAQED&zoom=original")
-                .couldComment(AlipayEnums.T)
+                .cover("https://oalipay-dl-django.alicdn.com/rest/1.0/image?fileIds=jsDwluVSRDiYVQITyrVzcwAAACMAAQED&zoom=original")
+                .couldComment(AlipayEnums.F)
                 .build();
         String bizContent = GsonUtil.toJson(build);
         return AlipayUtils.createMessage(alipayClient, bizContent);
@@ -101,8 +101,8 @@ public class AlipayController {
                     .title("标题")
                     .desc("内容")
                     .actionName("链接文字")
-                    .url("点击图文消息跳转的链接")
-                    .imageUrl("图片链接").build();
+                    .url("alipays://platformapi/startapp?appId=20000909&url=%2Fwww%2Fmsg.html%3FpublicId%3D2019100968229570%26msgId%3D20191009682295703f73ea15-8f7d-40c7-965a-b1ecdafd59de%26sourceId%3DOPENAPI_ITMC")
+                    .imageUrl("https://oalipay-dl-django.alicdn.com/rest/1.0/image?fileIds=7840I6k5Tn-hksT4TwmDDQAAACMAAQED&zoom=original").build();
             articles.add(build);
             articles.add(build);
             return GsonUtil.toJson(AlipayImageTextDto.builder()
