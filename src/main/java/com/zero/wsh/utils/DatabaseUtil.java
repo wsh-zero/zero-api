@@ -5,7 +5,9 @@ import org.slf4j.LoggerFactory;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class DatabaseUtil {
     private static final Logger logger = LoggerFactory.getLogger(DatabaseUtil.class);
@@ -87,20 +89,27 @@ public class DatabaseUtil {
      * @param tableName 表名
      * @return
      */
-    public static List<String> getColumnNames(String tableName) {
-        List<String> columnNames = new ArrayList<>();
+    public static List<Map<String, String>> getColumnNames(String tableName) {
+        List<Map<String, String>> columnNames = new ArrayList<>();
         //与数据库的连接
         Connection conn = getConnection();
         PreparedStatement pStemt = null;
-        String tableSql = SQL + tableName;
+        String tableSql = "select column_name , data_type, column_comment, column_key, extra from information_schema.columns" +
+                " where table_name = ? and table_schema = (select database()) order by ordinal_position";
         try {
             pStemt = conn.prepareStatement(tableSql);
+            pStemt.setString(1, tableName);
+            ResultSet resultSet = pStemt.executeQuery();
             //结果集元数据
             ResultSetMetaData rsmd = pStemt.getMetaData();
             //表列数
             int size = rsmd.getColumnCount();
-            for (int i = 0; i < size; i++) {
-                columnNames.add(rsmd.getColumnName(i + 1));
+            while (resultSet.next()) {
+                Map<String, String> map = new HashMap<>();
+                for (int i = 1; i <= size; i++) {
+                    map.put(rsmd.getColumnName(i), resultSet.getString(i));
+                }
+                columnNames.add(map);
             }
         } catch (SQLException e) {
             logger.error("getColumnNames failure", e);
