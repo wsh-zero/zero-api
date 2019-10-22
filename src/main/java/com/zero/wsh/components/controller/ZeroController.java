@@ -20,7 +20,7 @@ public class ZeroController {
     @ApiOperation("查询")
     public Object zero(String tableName) {
         //查询列信息
-        List<Map<String, String>> columns = DatabaseUtil.getColumnNames(tableName);
+        List<Map<String, String>> columns = new DatabaseUtil().getColumnNames(tableName);
         //生成代码
         GenUtils.generatorCode(columns);
 

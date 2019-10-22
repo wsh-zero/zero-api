@@ -1,5 +1,6 @@
 package com.zero.wsh.utils;
 
+import com.zero.wsh.enums.TableEnums;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,33 +12,39 @@ import java.util.Map;
 
 public class DatabaseUtil {
     private static final Logger logger = LoggerFactory.getLogger(DatabaseUtil.class);
-    private static final String DRIVER = "com.mysql.cj.jdbc.Driver";
-    private static final String DATABASE_URL = "jdbc:mysql://192.168.200.118:3306/zero?characterEncoding=utf8&useSSL=false&serverTimezone=GMT%2B8&nullNamePatternMatchesAll=true";
-    private static final String USERNAME = "root";
-    private static final String PASSWORD = "123456";
-    private static final String SQL = "SELECT * FROM ";// 数据库操作
+    private String driver;
+    private String url;
+    private String username;
+    private String password;
+    private DatabaseMetaData dbMetaData = null;
+    private Connection conn = null;
 
-    static {
-        try {
-            Class.forName(DRIVER);
-        } catch (ClassNotFoundException e) {
-            logger.error("can not load jdbc driver", e);
-        }
+    public DatabaseUtil() {
+        this.driver = "com.mysql.cj.jdbc.Driver";
+        this.url = "jdbc:mysql://192.168.200.118:3306?characterEncoding=utf8&useSSL=false&serverTimezone=GMT%2B8&nullNamePatternMatchesAll=true";
+        this.username = "root";
+        this.password = "123456";
+        this.getDatabaseMetaData();
     }
 
-    /**
-     * 获取数据库连接
-     *
-     * @return
-     */
-    public static Connection getConnection() {
-        Connection conn = null;
+    public DatabaseUtil(String driver, String url, String username, String password) {
+        this.driver = driver;
+        this.url = url;
+        this.username = username;
+        this.password = password;
+        this.getDatabaseMetaData();
+    }
+
+    private void getDatabaseMetaData() {
         try {
-            conn = DriverManager.getConnection(DATABASE_URL, USERNAME, PASSWORD);
-        } catch (SQLException e) {
-            logger.error("get connection failure", e);
+            if (null == dbMetaData || null == conn) {
+                Class.forName(this.driver);
+                conn = DriverManager.getConnection(this.url, this.username, this.password);
+                dbMetaData = conn.getMetaData();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        return conn;
     }
 
     /**
@@ -45,7 +52,7 @@ public class DatabaseUtil {
      *
      * @param conn
      */
-    public static void closeConnection(Connection conn) {
+    private void closeConnection(Connection conn) {
         if (conn != null) {
             try {
                 conn.close();
@@ -56,48 +63,16 @@ public class DatabaseUtil {
     }
 
     /**
-     * 获取数据库下的所有表名
-     */
-    public static List<String> getTableNames() {
-        List<String> tableNames = new ArrayList<>();
-        Connection conn = getConnection();
-        ResultSet rs = null;
-        try {
-            //获取数据库的元数据
-            DatabaseMetaData db = conn.getMetaData();
-            //从元数据中获取到所有的表名
-            rs = db.getTables("zero", null, null, new String[]{"TABLE"});
-            while (rs.next()) {
-                tableNames.add(rs.getString(3));
-            }
-        } catch (SQLException e) {
-            logger.error("getTableNames failure", e);
-        } finally {
-            try {
-                rs.close();
-                closeConnection(conn);
-            } catch (SQLException e) {
-                logger.error("close ResultSet failure", e);
-            }
-        }
-        return tableNames;
-    }
-
-    /**
      * 获取表中所有字段名称
      *
      * @param tableName 表名
-     * @return
+     * @return List
      */
-    public static List<Map<String, String>> getColumnNames(String tableName) {
+    public List<Map<String, String>> getColumnNames(String tableName) {
         List<Map<String, String>> columnNames = new ArrayList<>();
-        //与数据库的连接
-        Connection conn = getConnection();
-        PreparedStatement pStemt = null;
         String tableSql = "select column_name , data_type, column_comment, column_key, extra from information_schema.columns" +
                 " where table_name = ? and table_schema = (select database()) order by ordinal_position";
-        try {
-            pStemt = conn.prepareStatement(tableSql);
+        try (PreparedStatement pStemt = conn.prepareStatement(tableSql)) {
             pStemt.setString(1, tableName);
             ResultSet resultSet = pStemt.executeQuery();
             //结果集元数据
@@ -114,100 +89,118 @@ public class DatabaseUtil {
         } catch (SQLException e) {
             logger.error("getColumnNames failure", e);
         } finally {
-            if (pStemt != null) {
-                try {
-                    pStemt.close();
-                    closeConnection(conn);
-                } catch (SQLException e) {
-                    logger.error("getColumnNames close pstem and connection failure", e);
-                }
-            }
+            this.closeConnection(conn);
         }
         return columnNames;
     }
 
     /**
-     * 获取表中所有字段类型
+     * 获取所有数据库
      *
-     * @param tableName
-     * @return
+     * @return List
      */
-    public static List<String> getColumnTypes(String tableName) {
-        List<String> columnTypes = new ArrayList<>();
-        //与数据库的连接
-        Connection conn = getConnection();
-        PreparedStatement pStemt = null;
-        String tableSql = SQL + tableName;
+    public List<String> getCatalogs() {
+        List<String> list = new ArrayList<>();
         try {
-            pStemt = conn.prepareStatement(tableSql);
-            //结果集元数据
-            ResultSetMetaData rsmd = pStemt.getMetaData();
-            //表列数
-            int size = rsmd.getColumnCount();
-            for (int i = 0; i < size; i++) {
-                columnTypes.add(rsmd.getColumnTypeName(i + 1));
+            ResultSet rs = dbMetaData.getCatalogs();
+            while (rs.next()) {
+                list.add(rs.getString("TABLE_CAT"));
             }
         } catch (SQLException e) {
-            logger.error("getColumnTypes failure", e);
+            logger.error("获取所有数据库", e);
         } finally {
-            if (pStemt != null) {
-                try {
-                    pStemt.close();
-                    closeConnection(conn);
-                } catch (SQLException e) {
-                    logger.error("getColumnTypes close pstem and connection failure", e);
-                }
-            }
+            this.closeConnection(conn);
         }
-        return columnTypes;
+        return list;
     }
 
     /**
-     * 获取表中字段的所有注释
+     * 获取所有表
      *
-     * @param tableName
-     * @return
+     * @param catalog 数据库
+     * @return List
      */
-    public static List<String> getColumnComments(String tableName) {
-        List<String> columnTypes = new ArrayList<>();
-        //与数据库的连接
-        Connection conn = getConnection();
-        PreparedStatement pStemt = null;
-        String tableSql = SQL + tableName;
-        List<String> columnComments = new ArrayList<>();//列名注释集合
-        ResultSet rs = null;
+    public List<String> getTableInfoByCatalog(String catalog) {
+        List<String> list = new ArrayList<>();
         try {
-            pStemt = conn.prepareStatement(tableSql);
-            rs = pStemt.executeQuery("show full columns from " + tableName);
+            ResultSet rs = dbMetaData.getTables(catalog, null, null, new String[]{"TABLE"});
             while (rs.next()) {
-                columnComments.add(rs.getString("Comment"));
+                list.add(rs.getString("TABLE_NAME"));
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error("获取所有表", e);
         } finally {
-            if (rs != null) {
-                try {
-                    rs.close();
-                    closeConnection(conn);
-                } catch (SQLException e) {
-                    logger.error("getColumnComments close ResultSet and connection failure", e);
-                }
-            }
+            this.closeConnection(conn);
         }
-        return columnComments;
+        return list;
+    }
+
+    /**
+     * 获取列信息
+     *
+     * @param catalog   数据库
+     * @param tableName 表
+     * @return List
+     */
+    public List<TableInfo> getTableColumns(String catalog, String tableName) {
+        List<TableInfo> list = new ArrayList<>();
+        try {
+            ResultSet rs = dbMetaData.getColumns(catalog, null, tableName, "%");
+            List<String> tablePrimaryKeys = this.getTablePrimaryKeys(catalog, tableName);
+            while (rs.next()) {
+                String columnName = rs.getString("COLUMN_NAME");
+                String isPrimaryKey = TableEnums.NO.getKey();
+                if (tablePrimaryKeys.contains(columnName)) {
+                    isPrimaryKey = TableEnums.YES.getKey();
+                }
+                TableInfo build = TableInfo.builder()
+                        .columnName(columnName)
+                        .typeName(rs.getString("TYPE_NAME"))
+                        .columnSize(rs.getInt("COLUMN_SIZE"))
+                        .decimalDigits(rs.getInt("DECIMAL_DIGITS"))
+                        .isNullAble(rs.getString("IS_NULLABLE"))
+                        .remarks(rs.getString("REMARKS"))
+                        .columnDef(rs.getString("COLUMN_DEF"))
+                        .isAutoincrement(rs.getString("IS_AUTOINCREMENT"))
+                        .isPrimaryKey(isPrimaryKey)
+                        .build();
+                list.add(build);
+            }
+        } catch (SQLException e) {
+            logger.error("获取列信息", e);
+        } finally {
+            this.closeConnection(conn);
+        }
+        return list;
+    }
+
+    /**
+     * 获得表的主键信息
+     *
+     * @param catalog   数据库
+     * @param tableName 表
+     * @return
+     */
+    public List<String> getTablePrimaryKeys(String catalog, String tableName) {
+        List<String> list = new ArrayList<>();
+        try {
+            ResultSet rs = dbMetaData.getPrimaryKeys(catalog, null, tableName);
+            while (rs.next()) {
+                list.add(rs.getString("COLUMN_NAME"));
+            }
+        } catch (SQLException e) {
+            logger.error("获得表的主键信息", e);
+        } finally {
+            this.closeConnection(conn);
+        }
+        return list;
     }
 
     public static void main(String[] args) {
-        List<String> tableNames = getTableNames();
-        System.out.println("tableNames:" + tableNames);
-        for (String tableName : tableNames) {
-            System.out.println("================start==========================");
-            System.out.println("==============================================");
-            System.out.println("ColumnNames:" + getColumnNames(tableName));
-            System.out.println("ColumnTypes:" + getColumnTypes(tableName));
-            System.out.println("ColumnComments:" + getColumnComments(tableName));
-            System.out.println("==============================================");
-            System.out.println("=================end=======================");
-        }
+        DatabaseUtil databaseUtil = new DatabaseUtil();
+        List<String> catalogs = databaseUtil.getCatalogs();
+
+//        System.out.println(databaseUtil.getTableInfoByCatalog("zero"));
+        System.out.println(databaseUtil.getTableColumns("zero", "t_table_info"));
     }
 }
